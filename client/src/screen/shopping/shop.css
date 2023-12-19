@@ -1,0 +1,27 @@
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+/* This class should be added to the div wrapping your entire content in Home.jsx */
+.main-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* Ensure it's at least the full height of the viewport */
+}
+
+/* Ensure that your content grows to fill the space */
+.content {
+  flex: 1;
+}
+
+.pagination li {
+  display: inline-block;
+  justify-content: center;/* Ensure list items are in a line */
+}
+
+.mypage {
+  display: flex;
+  justify-content: center; /* Properly center the pagination */
+}
