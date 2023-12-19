@@ -198,6 +198,14 @@ app.post("/add", async (req, res) => {
   }
 });
 
+// Serve static files from the React app
+app.use(express.static(path.join(__dirname, 'client/build')));
+
+// The catch-all handler for any request that doesn't match the above
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
+});
+
 
 
 app.listen(port, () => console.log(`Listening to the port ${port}`));
