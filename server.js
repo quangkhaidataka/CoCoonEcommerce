@@ -31,6 +31,150 @@ const shopSchema = new Schema({
 const Shop = mongoose.model('Shop', shopSchema);
 
 
+const orderSchema = new Schema({
+  orderDate: {
+    type: Date,
+    default: Date.now
+  },
+  items: [{
+    product: {
+      type: Schema.Types.ObjectId,
+      ref: 'Shop'
+    }
+    // Removed quantity
+  }],
+  totalPrice: Number
+});
+
+const Order = mongoose.model('Order', orderSchema);
+
+const cartItemSchema = new Schema({
+  productId: { type: Schema.Types.ObjectId, ref: 'Shop' },
+  // You can add more fields here as needed, like quantity, user reference, etc.
+});
+
+const CartItem = mongoose.model('CartItem', cartItemSchema);
+
+
+const isValidObjectId = (id) => mongoose.Types.ObjectId.isValid(id) && new RegExp("^[0-9a-fA-F]{24}$").test(id);
+
+
+app.post('/addcart', async (req, res) => {
+  const { id } = req.body;
+
+  if (!id || !mongoose.isValidObjectId(id)) {
+    return res.status(400).json({ "error": "Invalid product ID format" });
+  }
+
+  try {
+    const product = await Shop.findById(id);
+    if (!product) {
+      return res.status(404).json({ "error": "Product not found" });
+    }
+
+    const newCartItem = new CartItem({ productId: id });
+    await newCartItem.save();
+    res.json(newCartItem);
+  } catch (err) {
+    console.error('Error adding to cart:', err);
+    res.status(500).json({ "error": "An error occurred while adding to the cart" });
+  }
+});
+
+
+app.post('/addorder', async (req, res) => {
+  const { cartitems } = req.body;
+
+  try {
+    // Fetch Cart Items
+    const cartItems = await CartItem.find({
+      _id: { $in: cartitems }
+    }).populate('productId'); // Ensure productId contains price information
+
+    // Calculate Total Price
+    const totalPrice = cartItems.reduce((total, item) => total + item.productId.price, 0);
+
+    // Create an Order Object
+    const newOrder = new Order({
+      items: cartItems.map(item => ({
+        product: item.productId._id
+      })),
+      totalPrice: totalPrice // Set the total price
+    });
+
+    // Save the Order
+    await newOrder.save();
+
+    // Delete all records from CartItem collection
+    await CartItem.deleteMany({});
+
+    // Send Response
+    res.status(201).json({ message: 'Order created and cart cleared successfully', order: newOrder });
+  } catch (error) {
+    console.error('Error processing order:', error);
+    res.status(500).json({ message: 'Internal Server Error', error: error.message });
+  }
+});
+
+app.get('/orders', async (req, res) => {
+  try {
+    // Find all orders and populate product details
+    const orders = await Order.find().populate('items.product');
+    console.log("hello all orders");
+
+    // Send response with orders
+    res.status(200).json(orders);
+  } catch (error) {
+    console.error('Error fetching orders:', error);
+    res.status(500).json({ message: 'Internal Server Error', error: error.message });
+  }
+});
+
+
+async function getProductsInOrder(orderId) {
+  if (!mongoose.isValidObjectId(orderId)) {
+    throw new Error("Invalid orderId ID format");
+  }
+
+  const order = await Order.findById(orderId).populate('items.product');
+  if (!order) {
+    throw new Error("Order not found");
+  }
+
+  // Extracting product details from each item
+  const products = order.items.map(item => item.product);
+  return products;
+}
+
+app.get('/orders/:id/products', async (req, res) => {
+  const orderId = req.params.id; // Correctly extract the orderId from params
+
+  console.log("Requested orderId ID:", orderId, typeof orderId);
+
+  try {
+    const products = await getProductsInOrder(orderId);
+    res.json(products);
+  } catch (error) {
+    console.error('Error:', error.message);
+    if (error.message === "Invalid orderId ID format" || error.message === "Order not found") {
+      return res.status(404).json({ message: error.message });
+    }
+    res.status(500).json({ message: 'Internal Server Error', error: error.message });
+  }
+});
+
+
+app.get('/cart', async (req, res) => {
+  try {
+    const cartItems = await CartItem.find().populate('productId');
+    res.json(cartItems);
+  } catch (err) {
+    console.error('Error fetching cart items:', err);
+    res.status(500).json({ "error": "An error occurred while fetching cart items" });
+  }
+});
+
+
 
 app.get("/shopping", async (req, res) => {
     let page = parseInt(req.query.page) || 1; // Default to 1 if not provided
@@ -84,7 +228,6 @@ app.post("/search", async (req, res) => {
 });
 
 
-const isValidObjectId = (id) => mongoose.Types.ObjectId.isValid(id) && new RegExp("^[0-9a-fA-F]{24}$").test(id);
 
 
 app.get("/shopping/:id", async (req, res) => {

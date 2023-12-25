@@ -8,9 +8,10 @@ import Home from './screen/homepage/Home';
 import Shopping from './screen/shopping/Shopping';
 import Product from './screen/product/Product';
 import Add from './screen/add/Add';
-
-
-
+import Cart from './screen/cart/Cart';
+import Order from './screen/orders/Order';
+import OrderView from './screen/orders/OrderView';
+import About from './screen/about/About';
 
 
 function App() {
@@ -24,6 +25,11 @@ function App() {
             <Route path="/add" element={<Add />} />
             <Route path="/search" element={<Shopping />} />
             <Route path="/edit/:id" element={<Add />} />
+            <Route path="/cart" element={<Cart />} />
+            <Route path="/orders" element={<Order />} />
+            <Route path="/about" element={<About />} />
+
+            <Route path="/orders/:id/products" element={<OrderView />} />
 
 
 

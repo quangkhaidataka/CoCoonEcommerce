@@ -1,0 +1,23 @@
+/* home.css */
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+
+@import url('https://fonts.googleapis.com/css?family=Work+Sans:400,700,900&display=swap');
+
+
+/* This class should be added to the div wrapping your entire content in Home.jsx */
+.main-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  /* Ensure it's at least the full height of the viewport */
+}
+
+/* Ensure that your content grows to fill the space */
+.content {
+  flex: 1;
+}

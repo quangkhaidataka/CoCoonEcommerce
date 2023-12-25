@@ -21,3 +21,10 @@ html, body {
 .content {
   flex: 1;
 }
+
+.myBackground {
+  background-image: url('https://example.com/path/to/your/image.jpg');
+  background-size: cover;
+  background-position: center;
+  height: 100vh;
+}
