@@ -38,7 +38,7 @@ function ProductContent(props) {
       <div className="row">
         <div className="col-lg-6">
           <div className="border rounded">
-            <a href="#">
+            <a>
               <img src={props.thumbnail} className="img-fluid rounded" alt="Product" />
             </a>
           </div>
