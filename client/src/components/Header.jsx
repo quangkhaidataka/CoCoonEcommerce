@@ -18,9 +18,11 @@ function Header() {
             </div>
             <div className="offcanvas-body">
               <ul className="navbar-nav flex-grow-1 justify-content-between">
-                <li className="nav-item"><a className="nav-link" href="#">
-                  <svg className="bi" width="24" height="24"><use xlinkHref="#aperture"/></svg>
-                </a></li>
+              <li className="nav-item">
+                  <a className="nav-link" href="#" onClick={(e) => e.preventDefault()}>
+                      <svg className="bi" width="24" height="24"></svg>
+                  </a>
+              </li>
                 <li className="nav-item"><Link to="/" className="nav-link">Home</Link></li>
                 <li className="nav-item"><Link to="/shopping" className="nav-link">Shopping</Link></li>
                 <li className="nav-item"><Link to="/orders" className="nav-link">All Orders</Link></li>
