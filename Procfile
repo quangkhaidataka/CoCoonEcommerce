@@ -1,1 +1,1 @@
-web: npm install concurrently --save && npm run dev
+web: npm run postinstall && npm run dev
