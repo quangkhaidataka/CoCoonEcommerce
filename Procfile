@@ -1,1 +1,1 @@
-web: npm install && npm run dev
+web: npm install --save-dev && npm run dev
