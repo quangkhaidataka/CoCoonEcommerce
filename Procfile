@@ -1,1 +1,1 @@
-web: npm run dev
+web: npm install concurrently --save && npm run dev
